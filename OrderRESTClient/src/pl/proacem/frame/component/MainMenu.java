@@ -12,6 +12,7 @@ import javax.swing.JMenuItem;
 import pl.proacem.frame.AboutFrame;
 import pl.proacem.frame.InvestorTableFrame;
 import pl.proacem.frame.PersonTableFrame;
+import pl.proacem.frame.Search;
 import pl.proacem.frame.SingleOrderTableFrame;
 import pl.proacem.frame.SupplierTableFrame;
 
@@ -62,8 +63,19 @@ public class MainMenu extends JMenuBar {
 				
 			}
 		});
+		JMenuItem search = new JMenuItem("Search");
+		search.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialog searchDialog = new Search();
+				searchDialog.setVisible(true);
+				
+			}
+		});
 		
 		about.add(loggedUser);
+		about.add(search);
 		
 		JMenu tables = new JMenu("Tables");
 		JMenuItem personTableItem = new JMenuItem("Person");
