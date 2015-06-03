@@ -109,13 +109,12 @@ public class Search extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
+				JButton cancelButton = new JButton("Close");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						close();
+					}
+				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
@@ -128,7 +127,7 @@ public class Search extends JDialog {
 				//list.clear();
 				list = ObservableCollections.observableList(service.getTest(textField.getText()));
 				System.out.println(service.getTest(textField.getText()));
-				
+				textPane.setText(list.toString());
 				
 				
 				
@@ -138,11 +137,14 @@ public class Search extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				textPane.setText(list.toString());
+				
 				
 			}
 		});
 		
+	}
+	private void close(){
+		this.dispose();
 	}
 
 }

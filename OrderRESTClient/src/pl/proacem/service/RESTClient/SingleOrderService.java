@@ -144,7 +144,7 @@ public class SingleOrderService implements ServiceInterface<SingleOrder> {
 	
 	public List<SingleOrder> getTest(String word){
 		SingleOrder[] arr = template.getForObject(
-				"http://localhost:8080/orderRest/singleorder/search/" + word,
+				"http://localhost:8080/orderRest/search/singleorder/" + word,
 				SingleOrder[].class);
 		singleOrders.clear();
 		singleOrders.addAll(Arrays.asList(arr));
