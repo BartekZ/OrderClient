@@ -1,15 +1,12 @@
 package pl.proacem.service.RESTClient;
 
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.jdesktop.observablecollections.ObservableList;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import pl.proacem.model.MainOrder;
@@ -143,6 +140,8 @@ public class MainOrderService implements ServiceInterface<MainOrder> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 	
 
 

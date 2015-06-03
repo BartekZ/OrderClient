@@ -131,7 +131,7 @@ public class SingleOrderService implements ServiceInterface<SingleOrder> {
 		return singleOrder;
 	}
 
-	@Override
+
 	public List<SingleOrder> getByMainOrderId(int id) {
 		SingleOrder[] arr = template.getForObject(
 				"http://localhost:8080/orderRest/singleorder/mainorder/" + id,

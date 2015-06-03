@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -18,11 +19,15 @@ import org.jdesktop.observablecollections.ObservableList;
 
 import pl.proacem.model.SingleOrder;
 import pl.proacem.service.RESTClient.SingleOrderService;
+import pl.proacem.table.SingleOrderOwnerTableModel;
+import pl.proacem.table.SingleOrderTableModel;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+
+import javax.swing.JTable;
 
 public class Search extends JDialog {
 
@@ -35,7 +40,8 @@ public class Search extends JDialog {
 	private JButton btnSearch;
 	private JTextPane textPane;
 	private JButton btnRefresh;
-	private ObservableList<SingleOrder> list;
+	private ObservableList<SingleOrder> list = ObservableCollections.observableList(new ArrayList<SingleOrder>());
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -79,6 +85,9 @@ public class Search extends JDialog {
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
+		
+		textPane= new JTextPane();
+		contentPanel.add(textPane, "6, 2, 1, 2");
 		{
 			textField = new JTextField();
 			contentPanel.add(textField, "6, 4, left, default");
@@ -90,20 +99,24 @@ public class Search extends JDialog {
 			
 		}
 		{
-			JButton btnSend = new JButton("Send");
-			contentPanel.add(btnSend, "6, 8, left, default");
-		}
-		{
 			btnRefresh = new JButton("Refresh");
-			contentPanel.add(btnRefresh, "6, 10, left, center");
+			contentPanel.add(btnRefresh, "6, 8, left, center");
 			
 		}
 		{
 			
-			textPane= new JTextPane();
-			JScrollPane  scrollpana= new JScrollPane(textPane);
-			contentPanel.add(scrollpana, "6, 12, fill, fill");
+			table = new JTable(new SingleOrderOwnerTableModel(list));
+			JScrollPane scrollPane= new JScrollPane(table);
+			contentPanel.add(scrollPane, "6, 12, fill, fill");
 		}
+		btnRefresh.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				table.updateUI();
+				
+			}
+		});
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -124,19 +137,12 @@ public class Search extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SingleOrderService service = new SingleOrderService();
-				//list.clear();
-				list = ObservableCollections.observableList(service.getTest(textField.getText()));
+				list.clear();
+				list.addAll(service.getTest(textField.getText()));
 				System.out.println(service.getTest(textField.getText()));
 				textPane.setText(list.toString());
+				table.updateUI();
 				
-				
-				
-			}
-		});
-		btnRefresh.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
 				
 				
 			}

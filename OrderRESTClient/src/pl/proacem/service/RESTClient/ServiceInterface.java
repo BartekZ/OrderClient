@@ -16,5 +16,4 @@ public interface ServiceInterface<T> {
 	public List<T> getRangeFrom(long from);
 	public T getLastId();
 	public List<T> getByMainOrderId(int id);
-	
 }

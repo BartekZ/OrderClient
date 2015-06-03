@@ -99,12 +99,7 @@ public class PersonService implements ServiceInterface<Person> {
 		return person;
 	}
 
-	@Override
-	public List<Person> getByMainOrderId(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 	public Person getLogin(Person person){
 		person.setCreated(new Date());
 		person.setUpdated(new Date());
@@ -112,6 +107,12 @@ public class PersonService implements ServiceInterface<Person> {
 		Person person_ok = template.postForObject(
 				"http://localhost:8080/orderRest/person/login", person, Person.class);
 		return person_ok;
+	}
+
+	@Override
+	public List<Person> getByMainOrderId(int id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 
