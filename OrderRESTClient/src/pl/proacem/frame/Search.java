@@ -1,33 +1,38 @@
 package pl.proacem.frame;
 
 import java.awt.BorderLayout;
+import java.awt.Choice;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.observablecollections.ObservableCollections;
 import org.jdesktop.observablecollections.ObservableList;
 
+import pl.proacem.model.Investor;
+import pl.proacem.model.MainOrder;
 import pl.proacem.model.SingleOrder;
+import pl.proacem.model.Supplier;
 import pl.proacem.service.RESTClient.SingleOrderService;
+import pl.proacem.table.InvestorTableModel;
+import pl.proacem.table.MainOrderTableModel;
 import pl.proacem.table.SingleOrderOwnerTableModel;
-import pl.proacem.table.SingleOrderTableModel;
+import pl.proacem.table.SupplierTableModel;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-
-import javax.swing.JTable;
 
 public class Search extends JDialog {
 
@@ -38,10 +43,13 @@ public class Search extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private JButton btnSearch;
-	private JTextPane textPane;
-	private JButton btnRefresh;
-	private ObservableList<SingleOrder> list = ObservableCollections.observableList(new ArrayList<SingleOrder>());
+	private ObservableList<SingleOrder> singleOrderList = ObservableCollections.observableList(new ArrayList<SingleOrder>());
+	private ObservableList<MainOrder> mainOrderList = ObservableCollections.observableList(new ArrayList<MainOrder>());
+	private ObservableList<Supplier> supplierList = ObservableCollections.observableList(new ArrayList<Supplier>());
+	private ObservableList<Investor> investorList = ObservableCollections.observableList(new ArrayList<Investor>());
 	private JTable table;
+	private JPanel panel;
+	JComboBox petList;
 
 	/**
 	 * Launch the application.
@@ -80,14 +88,11 @@ public class Search extends JDialog {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
-		
-		textPane= new JTextPane();
-		contentPanel.add(textPane, "6, 2, 1, 2");
 		{
 			textField = new JTextField();
 			contentPanel.add(textField, "6, 4, left, default");
@@ -99,24 +104,14 @@ public class Search extends JDialog {
 			
 		}
 		{
-			btnRefresh = new JButton("Refresh");
-			contentPanel.add(btnRefresh, "6, 8, left, center");
-			
+			panel = new JPanel();
+			contentPanel.add(panel, "6, 8, fill, fill");
 		}
 		{
+			String[] items = {"singleorder", "mainorder", "investor", "supplier"};
+			petList = new JComboBox<String>(items);
 			
-			table = new JTable(new SingleOrderOwnerTableModel(list));
-			JScrollPane scrollPane= new JScrollPane(table);
-			contentPanel.add(scrollPane, "6, 12, fill, fill");
 		}
-		btnRefresh.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				table.updateUI();
-				
-			}
-		});
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -130,6 +125,7 @@ public class Search extends JDialog {
 				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
+				buttonPane.add(petList);
 			}
 		}
 		btnSearch.addActionListener(new ActionListener() {
@@ -137,10 +133,10 @@ public class Search extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SingleOrderService service = new SingleOrderService();
-				list.clear();
-				list.addAll(service.getTest(textField.getText()));
+				singleOrderList.clear();
+				singleOrderList.addAll(service.getTest(textField.getText()));
 				System.out.println(service.getTest(textField.getText()));
-				textPane.setText(list.toString());
+				searchSingleOrder();
 				table.updateUI();
 				
 				
@@ -151,6 +147,34 @@ public class Search extends JDialog {
 	}
 	private void close(){
 		this.dispose();
+	}
+	
+	private void searchSingleOrder(){
+		panel.removeAll();
+		table = new JTable(new SingleOrderOwnerTableModel(singleOrderList));
+		JScrollPane scrollPane= new JScrollPane(table);
+		panel.add(scrollPane);
+	}
+	
+	private void searchMainOrder(){
+		panel.removeAll();
+		table = new JTable(new MainOrderTableModel(mainOrderList));
+		JScrollPane scrollPane= new JScrollPane(table);
+		panel.add(scrollPane);
+	}
+	
+	private void searchInvestor(){
+		panel.removeAll();
+		table = new JTable(new InvestorTableModel(investorList));
+		JScrollPane scrollPane= new JScrollPane(table);
+		panel.add(scrollPane);
+	}
+	
+	private void searchSupplier(){
+		panel.removeAll();
+		table = new JTable(new SupplierTableModel(supplierList));
+		JScrollPane scrollPane= new JScrollPane(table);
+		panel.add(scrollPane);
 	}
 
 }
