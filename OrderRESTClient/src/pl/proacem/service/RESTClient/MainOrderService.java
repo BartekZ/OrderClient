@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import pl.proacem.model.MainOrder;
 import pl.proacem.model.Person;
+import pl.proacem.model.SingleOrder;
 
 public class MainOrderService implements ServiceInterface<MainOrder> {
 
@@ -139,6 +140,17 @@ public class MainOrderService implements ServiceInterface<MainOrder> {
 	public List<MainOrder> getByMainOrderId(int id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public List<MainOrder> getFind(String word){
+		MainOrder[] arr = template.getForObject(
+				"http://localhost:8080/orderRest/search/mainorder/" + word,
+				MainOrder[].class);
+		mainOrders.clear();
+		mainOrders.addAll(Arrays.asList(arr));
+
+		return mainOrders;
+		
 	}
 
 

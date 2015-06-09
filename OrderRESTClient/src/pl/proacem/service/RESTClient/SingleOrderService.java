@@ -142,7 +142,7 @@ public class SingleOrderService implements ServiceInterface<SingleOrder> {
 		return singleOrders;
 	}
 	
-	public List<SingleOrder> getTest(String word){
+	public List<SingleOrder> getFind(String word){
 		SingleOrder[] arr = template.getForObject(
 				"http://localhost:8080/orderRest/search/singleorder/" + word,
 				SingleOrder[].class);

@@ -23,6 +23,7 @@ import pl.proacem.model.Investor;
 import pl.proacem.model.MainOrder;
 import pl.proacem.model.SingleOrder;
 import pl.proacem.model.Supplier;
+import pl.proacem.service.RESTClient.MainOrderService;
 import pl.proacem.service.RESTClient.SingleOrderService;
 import pl.proacem.table.InvestorTableModel;
 import pl.proacem.table.MainOrderTableModel;
@@ -49,7 +50,7 @@ public class Search extends JDialog {
 	private ObservableList<Investor> investorList = ObservableCollections.observableList(new ArrayList<Investor>());
 	private JTable table;
 	private JPanel panel;
-	JComboBox petList;
+	private JComboBox tabList;
 
 	/**
 	 * Launch the application.
@@ -109,7 +110,7 @@ public class Search extends JDialog {
 		}
 		{
 			String[] items = {"singleorder", "mainorder", "investor", "supplier"};
-			petList = new JComboBox<String>(items);
+			tabList = new JComboBox<String>(items);
 			
 		}
 		{
@@ -125,21 +126,35 @@ public class Search extends JDialog {
 				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
-				buttonPane.add(petList);
+				buttonPane.add(tabList);
 			}
 		}
 		btnSearch.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SingleOrderService service = new SingleOrderService();
-				singleOrderList.clear();
-				singleOrderList.addAll(service.getTest(textField.getText()));
-				System.out.println(service.getTest(textField.getText()));
-				searchSingleOrder();
+				
+				
+				switch (tabList.getSelectedIndex()) {
+				case 0:
+					searchSingleOrder();
+					break;
+				case 1:
+					searchMainOrder();
+					break;
+				case 2:
+					searchInvestor();
+					break;
+				case 3:
+					searchSupplier();
+					break;
+
+				default:
+					break;
+				}
+				System.out.println(tabList.getSelectedIndex());
+				panel.updateUI();
 				table.updateUI();
-				
-				
 				
 			}
 		});
@@ -150,13 +165,22 @@ public class Search extends JDialog {
 	}
 	
 	private void searchSingleOrder(){
+		SingleOrderService service = new SingleOrderService();
+		singleOrderList.clear();
+		singleOrderList.addAll(service.getFind(textField.getText()));
+		System.out.println(service.getFind(textField.getText()));
 		panel.removeAll();
 		table = new JTable(new SingleOrderOwnerTableModel(singleOrderList));
 		JScrollPane scrollPane= new JScrollPane(table);
 		panel.add(scrollPane);
+		panel.updateUI();
 	}
 	
 	private void searchMainOrder(){
+		MainOrderService service = new MainOrderService();
+		mainOrderList.clear();
+		mainOrderList.addAll(service.getFind(textField.getText()));
+		System.out.println(service.getFind(textField.getText()));
 		panel.removeAll();
 		table = new JTable(new MainOrderTableModel(mainOrderList));
 		JScrollPane scrollPane= new JScrollPane(table);
