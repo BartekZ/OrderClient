@@ -1,12 +1,12 @@
 package pl.proacem.frame;
 
 import java.awt.BorderLayout;
-import java.awt.Choice;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -23,17 +23,14 @@ import pl.proacem.model.Investor;
 import pl.proacem.model.MainOrder;
 import pl.proacem.model.SingleOrder;
 import pl.proacem.model.Supplier;
+import pl.proacem.service.RESTClient.InvestorService;
 import pl.proacem.service.RESTClient.MainOrderService;
 import pl.proacem.service.RESTClient.SingleOrderService;
+import pl.proacem.service.RESTClient.SupplierService;
 import pl.proacem.table.InvestorTableModel;
 import pl.proacem.table.MainOrderTableModel;
 import pl.proacem.table.SingleOrderOwnerTableModel;
 import pl.proacem.table.SupplierTableModel;
-
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
 
 public class Search extends JDialog {
 
@@ -41,7 +38,7 @@ public class Search extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
+	private JPanel contentPane;
 	private JTextField textField;
 	private JButton btnSearch;
 	private ObservableList<SingleOrder> singleOrderList = ObservableCollections.observableList(new ArrayList<SingleOrder>());
@@ -50,7 +47,7 @@ public class Search extends JDialog {
 	private ObservableList<Investor> investorList = ObservableCollections.observableList(new ArrayList<Investor>());
 	private JTable table;
 	private JPanel panel;
-	private JComboBox tabList;
+	private JComboBox<String> mainComboBox;
 
 	/**
 	 * Launch the application.
@@ -70,72 +67,54 @@ public class Search extends JDialog {
 	 */
 	public Search() {
 		setModal(true);
-		setBounds(100, 100, 602, 465);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),}));
-		{
-			textField = new JTextField();
-			contentPanel.add(textField, "6, 4, left, default");
-			textField.setColumns(10);
-		}
-		{
-			btnSearch = new JButton("Search");
-			contentPanel.add(btnSearch, "6, 6, left, default");
-			
-		}
-		{
-			panel = new JPanel();
-			contentPanel.add(panel, "6, 8, fill, fill");
-		}
-		{
-			String[] items = {"singleorder", "mainorder", "investor", "supplier"};
-			tabList = new JComboBox<String>(items);
-			
-		}
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton cancelButton = new JButton("Close");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						close();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-				buttonPane.add(tabList);
+		setBounds(100, 100, 1200, 800);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_top = new JPanel();
+		contentPane.add(panel_top, BorderLayout.NORTH);
+		panel_top.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		textField = new JTextField();
+		panel_top.add(textField);
+		textField.setColumns(20);
+		
+		btnSearch = new JButton("Search");
+		panel_top.add(btnSearch);
+		
+		mainComboBox = new JComboBox<String>();
+		mainComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Singleorders", "Mainorders", "Investors", "Suppliers"}));
+		panel_top.add(mainComboBox);
+		
+		JComboBox<String> subComboBox = new JComboBox<String>();
+		subComboBox.setVisible(false);
+		panel_top.add(subComboBox);
+		
+		
+		panel = new JPanel();
+		contentPane.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_bottom = new JPanel();
+		contentPane.add(panel_bottom, BorderLayout.SOUTH);
+		panel_bottom.setLayout(new BorderLayout(0, 0));
+		
+		JButton btnNewButton = new JButton("Close");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				close();
 			}
-		}
+		});
+		panel_bottom.add(btnNewButton, BorderLayout.LINE_END);
 		btnSearch.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				
-				switch (tabList.getSelectedIndex()) {
+				switch (mainComboBox.getSelectedIndex()) {
 				case 0:
 					searchSingleOrder();
 					break;
@@ -152,7 +131,6 @@ public class Search extends JDialog {
 				default:
 					break;
 				}
-				System.out.println(tabList.getSelectedIndex());
 				panel.updateUI();
 				table.updateUI();
 				
@@ -173,14 +151,12 @@ public class Search extends JDialog {
 		table = new JTable(new SingleOrderOwnerTableModel(singleOrderList));
 		JScrollPane scrollPane= new JScrollPane(table);
 		panel.add(scrollPane);
-		panel.updateUI();
 	}
 	
 	private void searchMainOrder(){
 		MainOrderService service = new MainOrderService();
 		mainOrderList.clear();
 		mainOrderList.addAll(service.getFind(textField.getText()));
-		System.out.println(service.getFind(textField.getText()));
 		panel.removeAll();
 		table = new JTable(new MainOrderTableModel(mainOrderList));
 		JScrollPane scrollPane= new JScrollPane(table);
@@ -188,6 +164,9 @@ public class Search extends JDialog {
 	}
 	
 	private void searchInvestor(){
+		InvestorService service = new InvestorService();
+		investorList.clear();
+		investorList.addAll(service.getFind(textField.getText()));
 		panel.removeAll();
 		table = new JTable(new InvestorTableModel(investorList));
 		JScrollPane scrollPane= new JScrollPane(table);
@@ -195,6 +174,9 @@ public class Search extends JDialog {
 	}
 	
 	private void searchSupplier(){
+		SupplierService service = new SupplierService();
+		supplierList.clear();
+		supplierList.addAll(service.getFind(textField.getText()));
 		panel.removeAll();
 		table = new JTable(new SupplierTableModel(supplierList));
 		JScrollPane scrollPane= new JScrollPane(table);

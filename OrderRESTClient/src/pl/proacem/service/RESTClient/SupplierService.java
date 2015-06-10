@@ -7,6 +7,7 @@ import java.util.List;
 import org.jdesktop.observablecollections.ObservableList;
 import org.springframework.web.client.RestTemplate;
 
+import pl.proacem.model.Investor;
 import pl.proacem.model.Person;
 import pl.proacem.model.Supplier;
 
@@ -124,6 +125,16 @@ public class SupplierService implements ServiceInterface<Supplier> {
 	public List<Supplier> getByMainOrderId(int id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public List<Supplier> getFind(String word) {
+		Supplier[] arr = template.getForObject(
+				"http://localhost:8080/orderRest/search/supplier/" + word,
+				Supplier[].class);
+		suppliers.clear();
+		suppliers.addAll(Arrays.asList(arr));
+
+		return suppliers;
 	}
 
 

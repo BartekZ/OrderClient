@@ -125,6 +125,16 @@ public class InvestorService implements ServiceInterface<Investor> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public List<Investor> getFind(String word) {
+		Investor[] arr = template.getForObject(
+				"http://localhost:8080/orderRest/search/investor/" + word,
+				Investor[].class);
+		investors.clear();
+		investors.addAll(Arrays.asList(arr));
+
+		return investors;
+	}
 	
 
 
